@@ -1,14 +1,12 @@
 import 'reflect-metadata';
 import AppError from '@shared/errors/AppError';
 import AuthenticateUserService from './AuthenticateUserService';
-import CreateUserService from './CreateUserService';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
 import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 
 let fakeUsersRepository: FakeUsersRepository;
 let fakeHashProvider: FakeHashProvider;
 let authenticateUser: AuthenticateUserService;
-let createUserService: CreateUserService;
 
 describe('AuthenticateUser', () => {
   beforeEach(() => {
@@ -19,16 +17,11 @@ describe('AuthenticateUser', () => {
       fakeUsersRepository,
       fakeHashProvider,
     );
-
-    createUserService = new CreateUserService(
-      fakeUsersRepository,
-      fakeHashProvider,
-    );
   });
   it('should be able to authenticate', async () => {
     const userPassword = await fakeHashProvider.generateHash('123456');
 
-    const user = await createUserService.execute({
+    const user = await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'test@test.com',
       password: userPassword,
@@ -47,7 +40,7 @@ describe('AuthenticateUser', () => {
     const userPassword = await fakeHashProvider.generateHash('123456');
     const differentPassword = 'abcdefg';
 
-    await createUserService.execute({
+    await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'test@test.com',
       password: userPassword,
